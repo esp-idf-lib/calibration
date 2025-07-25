@@ -11,7 +11,7 @@ Multi-point calibration library.
 ## Installation
 
 ```sh
-idf.py add-dependency "esp-idf-lib/calibration^0.1.0
+idf.py add-dependency esp-idf-lib/calibration^0.1.0
 ```
 
 ## Support
