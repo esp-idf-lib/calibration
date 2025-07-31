@@ -20,7 +20,8 @@
 
 static char *TAG = "calibration_example";
 
-static const calibration_point_t points[] = {
+static const calibration_point_t points[] =
+{
     { .code = 20,  .value = 40 },
     { .code = 10,  .value = 25 },
     { .code = 15,  .value = 31 },
@@ -31,7 +32,8 @@ static const calibration_point_t points[] = {
 
 static const size_t num_points = sizeof(points) / sizeof(calibration_point_t);
 
-static const float test_points[] = {
+static const float test_points[] =
+{
     0, -40, 15, 16, 30, 300, 31, 35, 40
 };
 

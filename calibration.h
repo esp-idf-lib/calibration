@@ -48,7 +48,8 @@ extern "C" {
 /**
  * Approximation methods
  */
-typedef enum {
+typedef enum
+{
     CALIBRATION_LINEAR = 0, //!< Fast linear approximation. The more points, the more accurate approximation
 } calibration_method_t;
 
