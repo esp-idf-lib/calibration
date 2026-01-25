@@ -8,7 +8,7 @@ code_owners:
   - UncleRus
 depends:
   - log
-thread_safe: n/a
+thread_safe: no
 targets:
   - esp32
   - esp8266
