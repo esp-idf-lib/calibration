@@ -4,7 +4,7 @@
 [![Build docs](https://github.com/esp-idf-lib/calibration/actions/workflows//build-docs.yml/badge.svg)](https://github.com/esp-idf-lib/calibration/actions/workflows//build-docs.yml)
 [![Validation](https://github.com/esp-idf-lib/calibration/actions/workflows//validate-component.yml/badge.svg)](https://github.com/esp-idf-lib/calibration/actions/workflows//validate-component.yml)
 
-Multi-point calibration library.
+Multi-point calibration (approximation) library.
 
 * [Documentation](https://esp-idf-lib.github.io/calibration/)
 * [Repository](https://github.com/esp-idf-lib/calibration)
