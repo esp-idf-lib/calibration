@@ -1,7 +1,7 @@
 ---
 version: 0.1.8
 description: Multi-point calibration (approximation) library
-license: BSD-3
+license: BSD-3-Clause
 dependencies: {}
 maintainers:
   - Ruslan V. Uss (@UncleRus) <unclerus@gmail.com>
