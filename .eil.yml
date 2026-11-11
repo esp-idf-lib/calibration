@@ -1,7 +1,7 @@
 ---
 name: calibration
 description: Multi-point calibration library
-version: 0.1.7
+version: 0.1.8
 groups:
   - common
 code_owners:
