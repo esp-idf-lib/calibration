@@ -35,6 +35,7 @@
  * BSD Licensed as described in the file LICENSE
  */
 #include "calibration.h"
+#include <math.h>
 #include <esp_log.h>
 #include <string.h>
 #include <stdlib.h>
@@ -86,6 +87,12 @@ esp_err_t calibration_add_point(calibration_handle_t *handler, float code, float
 {
     CHECK_ARG(handler && handler->points);
 
+    if (!isfinite(code) || !isfinite(value))
+    {
+        ESP_LOGE(TAG, "Calibration point must be finite: code %f, value %f", code, value);
+        return ESP_ERR_INVALID_ARG;
+    }
+
     // FIXME: inefficient
     for (size_t i = 0; i < handler->filled; i++)
         if (handler->points[i].code == code)
@@ -136,6 +143,12 @@ esp_err_t calibration_add_points(calibration_handle_t *handler, const calibratio
 esp_err_t calibration_get_value(calibration_handle_t *handler, float code, float *value)
 {
     CHECK_ARG(handler && handler->points && value);
+
+    if (!isfinite(code))
+    {
+        ESP_LOGE(TAG, "Raw value must be finite: %f", code);
+        return ESP_ERR_INVALID_ARG;
+    }
 
     if (handler->filled < 2)
     {
