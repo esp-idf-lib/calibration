@@ -67,7 +67,7 @@ esp_err_t calibration_init(calibration_handle_t *handler, size_t count, calibrat
     if (handler->points)
     {
         ESP_LOGE(TAG, "Handler already initialized");
-        return ESP_FAIL;
+        return ESP_ERR_INVALID_STATE;
     }
 
     handler->type = type;
@@ -104,7 +104,7 @@ esp_err_t calibration_add_point(calibration_handle_t *handler, float code, float
     if (handler->filled == handler->count)
     {
         ESP_LOGE(TAG, "List of calibration points is full");
-        return ESP_ERR_NO_MEM;
+        return ESP_ERR_INVALID_STATE;
     }
 
     size_t pos;
@@ -153,7 +153,7 @@ esp_err_t calibration_get_value(calibration_handle_t *handler, float code, float
     if (handler->filled < 2)
     {
         ESP_LOGE(TAG, "Not enough calibration points, need at least two");
-        return ESP_FAIL;
+        return ESP_ERR_INVALID_STATE;
     }
 
     // looking for a segment
