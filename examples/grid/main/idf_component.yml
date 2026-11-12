@@ -1,0 +1,7 @@
+---
+version: 1.0.0
+description: grid
+dependencies:
+  esp-idf-lib/calibration:
+    version: "*"
+    override_path: "../../../"
