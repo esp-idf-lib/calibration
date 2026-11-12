@@ -76,55 +76,95 @@ typedef struct
 /**
  * @brief Init calibration handle
  *
- * Allocates memory to store calibration points, fills handle structure.
+ * Allocates memory to store calibration points and fills the handle.
+ * The handle must be zeroed before the first call, e.g.
+ * `calibration_handle_t handler = { 0 };`.
  *
  * @param handler Pointer to calibration handle structure
- * @param count   Maximum number of calibration points
+ * @param count   Maximum number of calibration points, at least 2
  * @param type    Approximation type
  *
- * @return `ESP_OK` on success
+ * @return
+ *      - `ESP_OK` on success
+ *      - `ESP_ERR_INVALID_ARG` if @p handler is NULL or @p count is less than 2
+ *      - `ESP_ERR_NOT_SUPPORTED` if @p type is not supported
+ *      - `ESP_ERR_INVALID_STATE` if the handle is already initialized
+ *      - `ESP_ERR_NO_MEM` if the point list could not be allocated
  */
 esp_err_t calibration_init(calibration_handle_t *handler, size_t count, calibration_method_t type);
 
 /**
  * @brief Add calibration point
  *
+ * The point is inserted into the list, which is kept ordered by the raw
+ * value. If a point with the same raw value already exists, its calibrated
+ * value is replaced. Both values must be finite: NaN and infinities are
+ * rejected, because they break the ordering of the list.
+ *
  * @param handler Pointer to calibration handle structure
  * @param code    Raw value
  * @param value   Calibrated value
  *
- * @return `ESP_OK` on success
+ * @return
+ *      - `ESP_OK` on success
+ *      - `ESP_ERR_INVALID_ARG` if @p handler is NULL, the handle is not
+ *        initialized, or @p code or @p value is not finite
+ *      - `ESP_ERR_INVALID_STATE` if the point list is full
  */
 esp_err_t calibration_add_point(calibration_handle_t *handler, float code, float value);
 
 /**
  * @brief Add multiple calibration points
  *
+ * Either all points are added or none of them: the free space is checked
+ * before the first point is stored.
+ *
  * @param handler Pointer to calibration handle structure
  * @param points  Array of calibration points
  * @param count   Number of calibration points to add
  *
- * @return `ESP_OK` on success
+ * @return
+ *      - `ESP_OK` on success
+ *      - `ESP_ERR_INVALID_ARG` if @p handler or @p points is NULL, the handle
+ *        is not initialized, or one of the points is not finite
+ *      - `ESP_ERR_INVALID_STATE` if the points do not fit into the list
  */
 esp_err_t calibration_add_points(calibration_handle_t *handler, const calibration_point_t *points, size_t count);
 
 /**
  * @brief Get calibrated value by raw value
  *
+ * The value is linearly interpolated between the two closest points. A raw
+ * value equal to one of the points returns that point's calibrated value.
+ * Raw values outside the range of the points are extrapolated using the
+ * outermost segment, so the result is a linear continuation, not a clamp.
+ *
  * @param handler    Pointer to calibration handle structure
- * @param code       Raw value
+ * @param code       Raw value, must be finite
  * @param[out] value Calculated calibrated value
  *
- * @return `ESP_OK` on success
+ * @return
+ *      - `ESP_OK` on success
+ *      - `ESP_ERR_INVALID_ARG` if @p handler or @p value is NULL, the handle
+ *        is not initialized, or @p code is not finite
+ *      - `ESP_ERR_INVALID_STATE` if less than two points were added
  */
 esp_err_t calibration_get_value(calibration_handle_t *handler, float code, float *value);
 
 /**
  * @brief Free calibration handle
  *
+ * Releases the point list. The handle can be initialized again after that.
+ *
  * @param handler Pointer to calibration handle structure
  *
- * @return `ESP_OK` on success
+ * @return
+ *      - `ESP_OK` on success
+ *      - `ESP_ERR_INVALID_ARG` if @p handler is NULL
+ *
+ * @note The library is not thread-safe and does not lock the handle.
+ * @note Fields of @ref calibration_handle_t are filled by the library and
+ * must not be modified by the application.
  */
 esp_err_t calibration_free(calibration_handle_t *handler);
 
