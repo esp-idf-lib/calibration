@@ -140,7 +140,7 @@ esp_err_t calibration_add_points(calibration_handle_t *handler, const calibratio
     return ESP_OK;
 }
 
-esp_err_t calibration_get_value(calibration_handle_t *handler, float code, float *value)
+esp_err_t calibration_get_value(const calibration_handle_t *handler, float code, float *value)
 {
     CHECK_ARG(handler && handler->points && value);
 

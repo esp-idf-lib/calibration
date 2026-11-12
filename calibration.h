@@ -150,7 +150,7 @@ esp_err_t calibration_add_points(calibration_handle_t *handler, const calibratio
  *        is not initialized, or @p code is not finite
  *      - `ESP_ERR_INVALID_STATE` if less than two points were added
  */
-esp_err_t calibration_get_value(calibration_handle_t *handler, float code, float *value);
+esp_err_t calibration_get_value(const calibration_handle_t *handler, float code, float *value);
 
 /**
  * @brief Free calibration handle
