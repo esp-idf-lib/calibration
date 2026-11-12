@@ -118,7 +118,14 @@ esp_err_t calibration_add_point(calibration_handle_t *handler, float code, float
 
 esp_err_t calibration_add_points(calibration_handle_t *handler, const calibration_point_t *points, size_t count)
 {
-    CHECK_ARG(handler && points && count <= handler->count);
+    CHECK_ARG(handler && points);
+
+    if (count > handler->count - handler->filled)
+    {
+        ESP_LOGE(TAG, "Cannot add %u point(s), %u of %u slots are used",
+                 (unsigned)count, (unsigned)handler->filled, (unsigned)handler->count);
+        return ESP_ERR_INVALID_STATE;
+    }
 
     for (size_t i = 0; i < count; i++)
         CHECK(calibration_add_point(handler, points[i].code, points[i].value));
