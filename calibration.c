@@ -118,7 +118,7 @@ esp_err_t calibration_add_point(calibration_handle_t *handler, float code, float
 
 esp_err_t calibration_add_points(calibration_handle_t *handler, const calibration_point_t *points, size_t count)
 {
-    CHECK_ARG(points && count <= handler->count);
+    CHECK_ARG(handler && points && count <= handler->count);
 
     for (size_t i = 0; i < count; i++)
         CHECK(calibration_add_point(handler, points[i].code, points[i].value));
