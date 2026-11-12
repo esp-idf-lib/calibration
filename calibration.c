@@ -35,6 +35,7 @@
  * BSD Licensed as described in the file LICENSE
  */
 #include "calibration.h"
+#include <math.h>
 #include <esp_log.h>
 #include <string.h>
 #include <stdlib.h>
@@ -66,7 +67,7 @@ esp_err_t calibration_init(calibration_handle_t *handler, size_t count, calibrat
     if (handler->points)
     {
         ESP_LOGE(TAG, "Handler already initialized");
-        return ESP_FAIL;
+        return ESP_ERR_INVALID_STATE;
     }
 
     handler->type = type;
@@ -86,6 +87,12 @@ esp_err_t calibration_add_point(calibration_handle_t *handler, float code, float
 {
     CHECK_ARG(handler && handler->points);
 
+    if (!isfinite(code) || !isfinite(value))
+    {
+        ESP_LOGE(TAG, "Calibration point must be finite: code %f, value %f", code, value);
+        return ESP_ERR_INVALID_ARG;
+    }
+
     // FIXME: inefficient
     for (size_t i = 0; i < handler->filled; i++)
         if (handler->points[i].code == code)
@@ -97,7 +104,7 @@ esp_err_t calibration_add_point(calibration_handle_t *handler, float code, float
     if (handler->filled == handler->count)
     {
         ESP_LOGE(TAG, "List of calibration points is full");
-        return ESP_ERR_NO_MEM;
+        return ESP_ERR_INVALID_STATE;
     }
 
     size_t pos;
@@ -118,7 +125,14 @@ esp_err_t calibration_add_point(calibration_handle_t *handler, float code, float
 
 esp_err_t calibration_add_points(calibration_handle_t *handler, const calibration_point_t *points, size_t count)
 {
-    CHECK_ARG(points && count <= handler->count);
+    CHECK_ARG(handler && points);
+
+    if (count > handler->count - handler->filled)
+    {
+        ESP_LOGE(TAG, "Cannot add %u point(s), %u of %u slots are used",
+                 (unsigned)count, (unsigned)handler->filled, (unsigned)handler->count);
+        return ESP_ERR_INVALID_STATE;
+    }
 
     for (size_t i = 0; i < count; i++)
         CHECK(calibration_add_point(handler, points[i].code, points[i].value));
@@ -126,14 +140,20 @@ esp_err_t calibration_add_points(calibration_handle_t *handler, const calibratio
     return ESP_OK;
 }
 
-esp_err_t calibration_get_value(calibration_handle_t *handler, float code, float *value)
+esp_err_t calibration_get_value(const calibration_handle_t *handler, float code, float *value)
 {
     CHECK_ARG(handler && handler->points && value);
+
+    if (!isfinite(code))
+    {
+        ESP_LOGE(TAG, "Raw value must be finite: %f", code);
+        return ESP_ERR_INVALID_ARG;
+    }
 
     if (handler->filled < 2)
     {
         ESP_LOGE(TAG, "Not enough calibration points, need at least two");
-        return ESP_FAIL;
+        return ESP_ERR_INVALID_STATE;
     }
 
     // looking for a segment
