@@ -40,6 +40,7 @@
 #define __CALIBRATION_H__
 
 #include <esp_err.h>
+#include <stddef.h>
 
 #ifdef __cplusplus
 extern "C" {
